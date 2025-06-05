@@ -1,0 +1,36 @@
+// prisma/schema.prisma
+
+// Add this block at the very top of your file
+datasource db {
+  provider = "postgresql" // Or "mysql", "sqlite", "mongodb", etc.
+  url      = env("DATABASE_URL") // Or DB_URL, make sure this matches your .env
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Your existing User and Post models go here
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  posts     Post[]
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  videoUrl  String?
+  imageUrl  String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
